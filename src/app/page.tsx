@@ -34,20 +34,28 @@ const toProj = "EPSG:4326";
 
 export default function Home() {
   const modalRef: LegacyRef<HTMLDialogElement> = useRef(null);
+  const [process, setProcess] = useState<string>("정보");
   const [oilType, setOilType] = useState<string>("D047");
   const [currentLocation, setCurrentLocation] = useState<MapAttr>();
   const [viewInfos, setViewInfos] = useState<ViewInfo[]>();
 
   const search = async () => {
     let viewInfoList: ViewInfo[] = [];
+    setProcess("areaCd 가져오기");
     let areaCd = await getAreaCd(currentLocation?.lat, currentLocation?.long);
+    setProcess("areaCd 가져옴");
+    setProcess("주소변환하기");
     let transFrom = await transCoord(
       currentLocation?.lat,
       currentLocation?.long
     );
+    setProcess("주소변환완료");
     let transFromX = transFrom.transX;
     let transFromY = transFrom.transY;
+    setProcess("주유소 정보 가져오기");
     let oilInfoList = await getOilInfo(areaCd, oilType);
+    setProcess("주유소 정보 가져오기 완료");
+    setProcess("거리 정보 및 데이터 조작중");
     for (let i = 0; i < oilInfoList.length; i++) {
       let item: OilInfo = oilInfoList[i];
       let name = item.name;
@@ -69,6 +77,7 @@ export default function Home() {
       };
       viewInfoList.push(info);
     }
+    setProcess("거리 정보 및 데이터 조작완료");
     viewInfoList.sort((a, b) => {
       return a.totalCost - b.totalCost;
     });
@@ -131,6 +140,7 @@ export default function Home() {
   return (
     <>
       <div>
+        <h1>{process}</h1>
         <div
           style={{
             position: "relative",
