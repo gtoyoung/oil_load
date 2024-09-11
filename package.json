@@ -9,16 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/proj4": "^2.5.5",
+    "canvas-confetti": "^1.9.3",
+    "next": "14.2.6",
+    "oil_load": "file:",
+    "proj4": "^2.12.1",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.6"
+    "react-kakao-maps-sdk": "^1.1.27",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.6"
+    "eslint-config-next": "14.2.6",
+    "typescript": "^5"
   }
 }
