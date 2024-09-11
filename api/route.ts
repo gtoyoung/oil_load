@@ -1,5 +1,26 @@
+function fetchWithTimeout(url: string, options = {}, timeout = 5000) {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeout);
+
+  return fetch(url, { ...options, signal })
+    .then((response) => {
+      clearTimeout(timeoutId); // 성공 시 타이머 해제
+      return response;
+    })
+    .catch((error) => {
+      if (error.name === "AbortError") {
+        throw new Error("Request timed out");
+      }
+      throw error;
+    });
+}
+
 export async function getAreaJsonData() {
-  return await fetch("../json/area.json").then((data) => {
+  return await fetchWithTimeout("../json/area.json", {}).then((data) => {
     return data.json();
   });
 }
@@ -7,7 +28,7 @@ export async function getAreaJsonData() {
 export async function getAreaCd(x?: Number, y?: Number) {
   const url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${y}&y=${x}&input_coord=WGS84`;
 
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "GET",
     headers: {
       Authorization: `${process.env.NEXT_PUBLIC_KAKAO_REST_HEADER}`,
@@ -35,7 +56,10 @@ export async function getAreaCd(x?: Number, y?: Number) {
         })[0].AREA_CD;
       } else {
         areaInfo = areas.filter((item: any) => {
-          return item.AREA_CD.substring(0, 2) === regionInfo.AREA_CD && item.AREA_NM === areaNm;
+          return (
+            item.AREA_CD.substring(0, 2) === regionInfo.AREA_CD &&
+            item.AREA_NM === areaNm
+          );
         })[0].AREA_CD;
       }
 
@@ -47,7 +71,7 @@ export async function getAreaCd(x?: Number, y?: Number) {
 export async function getOilInfo(areaCd: string, oilType: string) {
   var url = `${process.env.NEXT_PUBLIC_OIL_PROXY_SERVER}/getTop20?area=${areaCd}&oilType=${oilType}`;
 
-  return await fetch(url, {
+  return await fetchWithTimeout(url, {
     method: "GET",
   }).then((res) => {
     return res.json().then((data) => {
