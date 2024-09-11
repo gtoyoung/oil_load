@@ -41,7 +41,10 @@ export default function Home() {
   const search = async () => {
     let viewInfoList: ViewInfo[] = [];
     let areaCd = await getAreaCd(currentLocation?.lat, currentLocation?.long);
-    let transFrom = await transCoord(currentLocation?.lat, currentLocation?.long);
+    let transFrom = await transCoord(
+      currentLocation?.lat,
+      currentLocation?.long
+    );
     let transFromX = transFrom.transX;
     let transFromY = transFrom.transY;
     let oilInfoList = await getOilInfo(areaCd, oilType);
@@ -55,7 +58,9 @@ export default function Home() {
       let transTo = await transCoord(lat, lon);
       let transToX = transTo.transX;
       let transToY = transTo.transY;
-      const distance = Math.sqrt((transToX - transFromX) ** 2 + (transToY - transFromY) ** 2);
+      const distance = Math.sqrt(
+        (transToX - transFromX) ** 2 + (transToY - transFromY) ** 2
+      );
       const info: ViewInfo = {
         name: name,
         price: price,
@@ -76,11 +81,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      let x = position.coords.latitude;
-      let y = position.coords.longitude;
-      setCurrentLocation({ lat: position.coords.latitude, long: position.coords.longitude });
-    });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        let x = position.coords.latitude;
+        let y = position.coords.longitude;
+        setCurrentLocation({
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+        });
+      },
+      (event) => {
+        alert(
+          `위치 정보를 가져오는데 문제가 발생했습니다. ${event.code} - ${event.message}`
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 60000,
+        maximumAge: 0,
+      }
+    );
   }, []);
 
   const ModalPop = () => {
@@ -111,7 +131,14 @@ export default function Home() {
   return (
     <>
       <div>
-        <div style={{ position: "relative", textAlign: "center", top: "50px", zIndex: "1000" }}>
+        <div
+          style={{
+            position: "relative",
+            textAlign: "center",
+            top: "50px",
+            zIndex: "1000",
+          }}
+        >
           <select
             className="selectBox"
             onChange={(e) => {
