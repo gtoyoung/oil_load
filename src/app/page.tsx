@@ -37,14 +37,12 @@ export default function Home() {
   const [oilType, setOilType] = useState<string>("D047");
   const [currentLocation, setCurrentLocation] = useState<MapAttr>();
   const [viewInfos, setViewInfos] = useState<ViewInfo[]>();
+  const [aiMessage, setAiMessage] = useState<string>("");
 
   const search = async () => {
     let viewInfoList: ViewInfo[] = [];
     let areaCd = await getAreaCd(currentLocation?.lat, currentLocation?.long);
-    let transFrom = await transCoord(
-      currentLocation?.lat,
-      currentLocation?.long
-    );
+    let transFrom = await transCoord(currentLocation?.lat, currentLocation?.long);
     let transFromX = transFrom.transX;
     let transFromY = transFrom.transY;
     let oilInfoList = await getOilInfo(areaCd, oilType);
@@ -58,9 +56,7 @@ export default function Home() {
       let transTo = await transCoord(lat, lon);
       let transToX = transTo.transX;
       let transToY = transTo.transY;
-      const distance = Math.sqrt(
-        (transToX - transFromX) ** 2 + (transToY - transFromY) ** 2
-      );
+      const distance = Math.sqrt((transToX - transFromX) ** 2 + (transToY - transFromY) ** 2);
       const info: ViewInfo = {
         name: name,
         price: price,
@@ -73,11 +69,46 @@ export default function Home() {
       return a.totalCost - b.totalCost;
     });
     setViewInfos(viewInfoList);
+
+    // return sendMessage(viewInfoList);
+    return "";
+  };
+
+  const sendMessage = (infoList: ViewInfo[]) => {
+    let message = "현재의 위치에서 최저가 주유소 top 20입니다.";
+    message += infoList
+      .map((item) => {
+        return `${item.name}의 가격은 ${item.price}원이고, 거리는 ${item.distance}입니다.`;
+      })
+      .join("\n");
+    message +=
+      "위 정보의 주유소별 가격과 거리 정보와 자동차 연비는 10km/L 기준으로 가장 효율적인 주유소를 찾아서 추천해주세요.";
+    return message;
   };
 
   const totalCost = (distance: number, efficiency: number, price: number) => {
     let totalCost = (distance / efficiency) * price;
     return totalCost;
+  };
+
+  const aiSseSender = (message: string) => {
+    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_SSE_SERVER}/ai/chat?message=${message}`);
+
+    eventSource.onmessage = (event) => {
+      const chatResponse = JSON.parse(event.data);
+      if (chatResponse.result.output.content === "Chat Finish") {
+        eventSource.close();
+      } else {
+        let response = chatResponse.result.output.content;
+        if (response) {
+          setAiMessage((msg) => msg + response);
+        }
+      }
+    };
+
+    eventSource.onerror = (event) => {
+      console.log("SSE 연결 오류 발생: ", event);
+    };
   };
 
   useEffect(() => {
@@ -91,9 +122,7 @@ export default function Home() {
         });
       },
       (event) => {
-        alert(
-          `위치 정보를 가져오는데 문제가 발생했습니다. ${event.code} - ${event.message}`
-        );
+        alert(`위치 정보를 가져오는데 문제가 발생했습니다. ${event.code} - ${event.message}`);
       },
       {
         enableHighAccuracy: true,
@@ -153,18 +182,32 @@ export default function Home() {
         <button
           className="btn"
           onClick={() => {
-            search().then(() => {
+            search().then((message) => {
               confetti({
                 particleCount: 150,
               });
               setTimeout(() => {
                 modalRef.current?.showModal();
               }, 1000);
+              // setAiMessage("");
+              // aiSseSender(message);
             });
           }}
         >
           <img src="data:image/png;base64,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"></img>
         </button>
+      </div>
+      <div
+        style={{
+          position: "relative",
+          textAlign: "center",
+          top: "20px",
+          zIndex: "1000",
+          display: "inline-block",
+          whiteSpace: "pre-line",
+        }}
+      >
+        {aiMessage}
       </div>
       <ModalPop />
     </>
