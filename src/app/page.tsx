@@ -61,7 +61,7 @@ export default function Home() {
         name: name,
         price: price,
         distance: (distance / 1000).toFixed(2) + "KM",
-        totalCost: totalCost(distance, 10, price),
+        totalCost: totalCost(distance / 1000, 10, price),
       };
       viewInfoList.push(info);
     }
@@ -70,24 +70,22 @@ export default function Home() {
     });
     setViewInfos(viewInfoList);
 
-    // return sendMessage(viewInfoList);
-    return "";
+    return sendMessage(viewInfoList);
+    // return "";
   };
 
   const sendMessage = (infoList: ViewInfo[]) => {
-    let message = "현재의 위치에서 최저가 주유소 top 20입니다.";
+    let message = "";
     message += infoList
       .map((item) => {
-        return `${item.name}의 가격은 ${item.price}원이고, 거리는 ${item.distance}입니다.`;
+        return `The price of ${item.name} is ${item.price} won, and the distance is ${item.distance}`;
       })
       .join("\n");
-    message +=
-      "위 정보의 주유소별 가격과 거리 정보와 자동차 연비는 10km/L 기준으로 가장 효율적인 주유소를 찾아서 추천해주세요.";
     return message;
   };
 
   const totalCost = (distance: number, efficiency: number, price: number) => {
-    let totalCost = (distance / efficiency) * price;
+    let totalCost = price + ((distance * 2) / efficiency) * price;
     return totalCost;
   };
 
@@ -97,6 +95,7 @@ export default function Home() {
     eventSource.onmessage = (event) => {
       const chatResponse = JSON.parse(event.data);
       if (chatResponse.result.output.content === "Chat Finish") {
+        modalRef.current?.showModal();
         eventSource.close();
       } else {
         let response = chatResponse.result.output.content;
@@ -186,11 +185,11 @@ export default function Home() {
               confetti({
                 particleCount: 150,
               });
-              setTimeout(() => {
-                modalRef.current?.showModal();
-              }, 1000);
-              // setAiMessage("");
-              // aiSseSender(message);
+              // setTimeout(() => {
+              //   modalRef.current?.showModal();
+              // }, 1000);
+              setAiMessage("");
+              aiSseSender(message);
             });
           }}
         >
