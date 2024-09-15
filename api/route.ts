@@ -42,7 +42,13 @@ export async function getAreaCd(x?: Number, y?: Number) {
         .replace("특별자치시", "")
         .replace("광역시", "")
         .replace("광역시", "")
-        .replace("특별시", "");
+        .replace("특별시", "")
+        .replace("충청북도", "충북")
+        .replace("충청남도", "충남")
+        .replace("전라북도", "전북")
+        .replace("전라남도", "전남")
+        .replace("경상북도", "경북")
+        .replace("경상남도", "경남");
 
       var regionInfo = regions.filter((item: any) => {
         return item.AREA_NM === regionNm;
@@ -55,11 +61,9 @@ export async function getAreaCd(x?: Number, y?: Number) {
           return item.AREA_CD.substring(0, 2) === regionInfo.AREA_CD;
         })[0].AREA_CD;
       } else {
+        areaNm = areaNm.split(" ")[0];
         areaInfo = areas.filter((item: any) => {
-          return (
-            item.AREA_CD.substring(0, 2) === regionInfo.AREA_CD &&
-            item.AREA_NM === areaNm
-          );
+          return item.AREA_CD.substring(0, 2) === regionInfo.AREA_CD && item.AREA_NM === areaNm;
         })[0].AREA_CD;
       }
 
