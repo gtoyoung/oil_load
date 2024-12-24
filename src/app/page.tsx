@@ -228,8 +228,7 @@ export default function Home() {
           whiteSpace: "pre-line",
         }}
       >
-        {/* {aiMessage} */}
-        테스트 내용입니다.테스트 내용이라고요
+        {aiMessage}
       </div>
       <ModalPop />
     </>
