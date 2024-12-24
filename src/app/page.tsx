@@ -90,24 +90,46 @@ export default function Home() {
   };
 
   const aiSseSender = (message: string) => {
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_SSE_SERVER}/ai/chat?message=${message}`);
+    let eventSource: EventSource | null = null;
+    try {
+      const encodedMessage = encodeURIComponent(message);
+      eventSource = new EventSource(`${process.env.NEXT_PUBLIC_OIL_PROXY_SERVER}/createOilInfo?message=${encodedMessage}`);
 
-    eventSource.onmessage = (event) => {
-      const chatResponse = JSON.parse(event.data);
-      if (chatResponse.result.output.content === "Chat Finish") {
-        modalRef.current?.showModal();
-        eventSource.close();
-      } else {
-        let response = chatResponse.result.output.content;
-        if (response) {
-          setAiMessage((msg) => msg + response);
+      eventSource.onmessage = (event) => {
+        try {
+          const content = event.data;
+          
+          if (content === "[DONE]") {
+            modalRef.current?.showModal();
+            eventSource?.close();
+            eventSource = null;
+          } else if (content) {
+            setAiMessage(prev => prev + content);
+          }
+        } catch (error) {
+          console.error('Error processing message:', error);
         }
-      }
-    };
+      };
 
-    eventSource.onerror = (event) => {
-      console.log("SSE 연결 오류 발생: ", event);
-    };
+      eventSource.onerror = (error) => {
+        console.error('EventSource error:', error);
+        eventSource?.close();
+        eventSource = null;
+      };
+
+      return () => {
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+      };
+    } catch (error) {
+      console.error('Error setting up EventSource:', error);
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    }
   };
 
   useEffect(() => {
@@ -206,7 +228,8 @@ export default function Home() {
           whiteSpace: "pre-line",
         }}
       >
-        {aiMessage}
+        {/* {aiMessage} */}
+        테스트 내용입니다.테스트 내용이라고요
       </div>
       <ModalPop />
     </>
