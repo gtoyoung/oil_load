@@ -78,7 +78,7 @@ export default function Home() {
     let message = "";
     message += infoList
       .map((item) => {
-        return `The price of ${item.name} is ${item.price} won, and the distance is ${item.distance}`;
+        return `${item.name} 주유소의 가격은 ${item.price}원이고 거리는 ${item.distance}입니다.`;
       })
       .join("\n");
     return message;
