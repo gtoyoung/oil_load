@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Noto+Sans");
-
 * {
   margin: 0;
   padding: 0;
@@ -16,7 +14,7 @@ body {
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  font-family: "Noto Sans", sans-serif;
+  font-size: xx-large;
 }
 
 a {
@@ -116,7 +114,6 @@ dialog {
   position: relative;
   vertical-align: top;
   margin: 10px;
-  font-family: "helvetica", san-serif;
   min-height: 25vh;
   background: #262a2b;
   border: 1px solid #252727;
@@ -243,6 +240,12 @@ dialog {
   position: relative;
   z-index: 3;
 }
+/* Styles for the <option> elements within .selectBox .select
+ * - Sets a background color with rgba for transparency
+ * - Text color is set to white for contrast
+ * - Applies padding for spacing within the option
+ * - Sets the font size to 16px for readability
+ */
 .selectBox .select option {
   background: rgba(6, 134, 219, 0.788);
   color: #fff;

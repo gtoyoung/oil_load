@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] });
+const cokieeRun = localFont({
+  src: "../../static/font/CookieRun-Regular.ttf",
+  display: "swap",
+  weight: '100 920',
+  variable: "--font-cookieRun",
+});
+
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Near Oil",
@@ -15,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="kr" className={`${cokieeRun.variable}`}>
+      <body className={cokieeRun.className}>{children}</body>
     </html>
   );
 }
