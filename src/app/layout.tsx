@@ -14,7 +14,8 @@ const cokieeRun = localFont({
 
 export const metadata: Metadata = {
   title: "Near Oil",
-  description: "근처 가장 저렴한 주유소 TOP 20 중에 가장 효율적인 주유소를 추천",
+  description:
+    "근처 가장 저렴한 주유소 TOP 20 중에 가장 효율적인 주유소를 추천합니다.",
 };
 
 export default function RootLayout({
