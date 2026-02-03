@@ -12,7 +12,7 @@
     "@types/canvas-confetti": "^1.6.4",
     "@types/proj4": "^2.5.5",
     "canvas-confetti": "^1.9.3",
-    "next": "14.2.6",
+    "next": "14.2.35",
     "oil_load": "file:",
     "proj4": "^2.12.1",
     "react": "^18",
